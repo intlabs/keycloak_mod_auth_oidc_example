@@ -13,5 +13,6 @@ COPY ./html /var/www/html
 CMD apache2ctl -D FOREGROUND
 
 EXPOSE 80
-
+RUN sed -i 's|Listen 80|Listen 80|g' /etc/apache2/apache2.conf
+COPY ./ports.conf /etc/apache2/ports.conf
 COPY ./000-default.conf /etc/apache2/sites-enabled/000-default.conf

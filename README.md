@@ -10,9 +10,9 @@ A more sophisticated configuration with https / TLS can be found here:
 https://github.com/cyclone-project/cyclone-federation-provider-apache-oidc-demo
 
 ## Define the Keycloak client for the mod_auth_openidc client
- 
+
 Note that the docker host and the Keycloak instance is available via the IP: 172.17.0.1.
-Keycloak runs on port 8081. 
+Keycloak runs on port 8081.
 
 The Docker container has the IP: 172.17.0.2
 
@@ -27,7 +27,7 @@ Setup a new client under the "Clients" section of your realm configuration.
 - Web Origins
   - http://172.17.0.2/*
   - http://172.17.0.2:80/*
-  
+
 Copy the client secret from the credentials page, e.g.: 4a932456-6562-42fe-998c-32f7e69f29dc
 
 Now you should create a user in your realm.
@@ -48,12 +48,12 @@ ServerName ${HOSTIP}
     OIDCCryptoPassphrase a-random-secret-used-by-apache-oidc-and-balancer
 
     OIDCProviderMetadataURL ${KEYCLOAK_ADDR}/auth/realms/${KEYCLOAK_REALM}/.well-known/openid-configuration
-    
+
     OIDCClientID ${CLIENT_ID}
     OIDCClientSecret ${CLIENT_SECRET}
     OIDCRedirectURI http://${HOSTIP}/demo/redirect_uri
-   
-    # maps the prefered_username claim to the REMOTE_USER environment variable 
+
+    # maps the prefered_username claim to the REMOTE_USER environment variable
     OIDCRemoteUserClaim preferred_username
 
     <Location /demo/>
@@ -73,6 +73,7 @@ docker build -t keycloak-mod-oidc .
 docker run \
        -it \
        --rm \
+       --net=host \
        -e HOSTIP=172.17.0.2 \
        -e KEYCLOAK_ADDR=http://172.17.0.1:8081 \
        -e KEYCLOAK_REALM=master \
@@ -85,10 +86,10 @@ docker run \
 ## Browse to demo application
 Open http://172.17.0.2/ and click on the link `Access mod_oidc protected page`.
 Your browser should now redirect to the keycloak login page of the master realm.
-After login you should see a page that greets you with your username and 
+After login you should see a page that greets you with your username and
 a list of headers provided by Keycloak.
-Clicking on logout should log you out of your SESSION session and redirect you to the 
-index page. 
+Clicking on logout should log you out of your SESSION session and redirect you to the
+index page.
 
 An example for the provided headers can be seen below:
 ```
@@ -127,7 +128,7 @@ An example for the provided headers can be seen below:
 
 ## Docker container cannot access Keycloak
 
-If your container cannot access the keycloak instance running on the host 
+If your container cannot access the keycloak instance running on the host
 you could relax the iptables rules for the local docker0 network interface.
 ```
 sudo iptables -A INPUT -i docker0 -j ACCEPT
